@@ -16,7 +16,7 @@ const promotionsSchema = new Schema(
         },
         label: {
             type: String,
-            required: true,
+            default: ''
         },
         price: {
             type: Currency,
