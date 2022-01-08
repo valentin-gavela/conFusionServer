@@ -1,40 +1,52 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const logger = require('morgan');
 const mongoose = require('mongoose');
-const Dishes = require('./models/dishes');
+const cookieParser = require('cookie-parser');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
 
 const dishRouter = require('./routes/dishRouter');
 const promoRouter = require('./routes/promotionRouter');
 const leaderRouter = require('./routes/leaderRouter');
 
-var app = express();
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+app.use(cookieParser('12345-67890-09876-54321'));
 
 function auth(req, res, next) {
-  console.log(req.headers);
+  if (req.signedCookies.user) {
+
+    if (req.signedCookies.user === 'admin') {
+      next();
+    }
+    else {
+      const err = new Error('You are not authenticated!');
+      err.status = 401;
+      next(err);
+    }
+
+    return;
+  }
+
   const authHeader = req.headers.authorization;
   if (!authHeader) {
-    var err = new Error('You are not authenticated!');
+    const err = new Error('You are not authenticated!');
     res.setHeader('WWW-Authenticate', 'Basic');
     err.status = 401;
     next(err);
     return;
   }
-
   const auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
   const [user, pass] = auth;
-
   if (user == 'admin' && pass == 'password') {
+    res.cookie('user', 'admin', { signed: true });
     next(); // authorized
   } else {
     const err = new Error('You are not authenticated!');
@@ -42,6 +54,7 @@ function auth(req, res, next) {
     err.status = 401;
     next(err);
   }
+
 }
 
 app.use(auth);
