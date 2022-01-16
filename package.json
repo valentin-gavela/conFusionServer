@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "mongo:start": "sudo docker run -p 27017:27017 mongo"
+    "mongo:start": "sudo docker run -p 27017:27017 mongo",
+    "mongo:client" : "mongo localhost:27017"
   },
   "dependencies": {
     "cookie-parser": "^1.4.3",
