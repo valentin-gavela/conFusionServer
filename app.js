@@ -4,6 +4,8 @@ const path = require("path");
 const logger = require("morgan");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
+const uploadRouter = require("./routes/uploadRouter");
+
 // const session = require('express-session');
 // const FileStore = require('session-file-store')(session);
 const passport = require("passport");
@@ -54,6 +56,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/dishes", dishRouter);
 app.use("/promotions", promoRouter);
 app.use("/leaders", leaderRouter);
+app.use("/imageUpload", uploadRouter);
 
 app.use(logger("dev"));
 app.use(express.json());
